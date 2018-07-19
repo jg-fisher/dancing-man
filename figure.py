@@ -15,11 +15,11 @@ class StickFigure:
         self.shoulder = shoulder
         self.hip = hip
 
+        # joint angle parameters
         self.left_elbow_pos = shoulder[1]
         self.right_elbow_pos = shoulder[1]
         self.left_hand_pos = 30
         self.right_hand_pos = 30
-
         self.right_knee_pos = 1.25
         self.left_knee_pos = 1.25
         self.right_foot_pos = 25
@@ -27,6 +27,9 @@ class StickFigure:
 
 
     def update_joints(self):
+        """
+        Update joint angles with new parameter values.
+        """
 
         self.primary_joints = {
                 'hip': self.hip,
@@ -75,21 +78,29 @@ class StickFigure:
         draw(self.primary_joints['left_knee'], self.secondary_joints['left_foot'])
 
 
-    def _dance(self, feet=False):
+    def _dance(self, feet=False, right_elbow=False, left_elbow=False):
         """
         Changes coordinates of limbs.
         """
         
+        ru = random.uniform
+
+
+
         if feet:
-            self.right_knee_pos = random.uniform(1.1, 1.4)
-            self.left_knee_pos = random.uniform(1.1, 1.4)
-            self.left_foot_pos = random.uniform(10, 45)
-            self.right_foot_pos = random.uniform(10, 45)
+            self.right_knee_pos = ru(1.1, 1.4)
+            self.left_knee_pos = ru(1.1, 1.4)
+            self.left_foot_pos = ru(10, 45)
+            self.right_foot_pos = ru(10, 45)
+        elif right_elbow:
+            self.right_elbow_pos = ru(25, 175)
+        elif left_elbow:
+            self.left_elbow_pos = ru(25, 175)
         else:
-            self.left_elbow_pos = random.uniform(75, 175)  
-            self.right_elbow_pos = random.uniform(75, 175)
-            self.left_hand_pos = random.uniform(10, 50)
-            self.right_hand_pos = random.uniform(10, 50)
+            self.left_elbow_pos = ru(75, 175)  
+            self.right_elbow_pos = ru(75, 175)
+            self.left_hand_pos = ru(10, 50)
+            self.right_hand_pos = ru(10, 50)
 
     def show(self):
         """
@@ -101,12 +112,11 @@ class StickFigure:
 
                 if event.type == pygame.QUIT:
                     self.over = True
-
-            if keyboard.is_pressed('h'):
-                self._dance()
-
-            if keyboard.is_pressed('f'):
-                self._dance(feet=True)
+            
+            keyboard.on_press_key('h', lambda _: self._dance(), suppress=True)
+            keyboard.on_press_key('f', lambda _: self._dance(feet=True), suppress=True)
+            keyboard.on_press_key('y', lambda _: self._dance(right_elbow=True), suppress=True)
+            keyboard.on_press_key('n', lambda _: self._dance(left_elbow=True), suppress=True)
 
             self.display.fill((0, 0, 0))
             self._draw_figure()
